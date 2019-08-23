@@ -1,6 +1,3 @@
-import string
-
-
 def fromatLineChem(lineChem):
 
     # format split \n

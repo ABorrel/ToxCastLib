@@ -10,7 +10,7 @@ class Assay:
             self.charac["acid"] = lelem[1]
             self.charac["aeid"] = lelem[2]
             self.charac["asid"] = lelem[3]
-            self.charac["assay_source_name"] = lelem[4]
+            self.charac["assay_source_name"] = lelem[4].replace("\"", "")
             self.charac["assay_source_long_name"] = lelem[5]
             self.charac["assay_source_desc"] = lelem[6]
             self.charac["assay_name"] = lelem[7]

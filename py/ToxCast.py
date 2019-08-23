@@ -1,11 +1,12 @@
-from re import finditer, escape
-from os import path
 from copy import deepcopy
+from os import path
 
 import Assays
 import ChemCAS
-import toolbox
 import runExternalScript
+
+# define the dataset folder
+PR_DATA = "/home/borrela2/data/"
 
 
 def fromatAssaysBlock(AssaysBlock):
@@ -43,16 +44,18 @@ def fromatAssaysBlock(AssaysBlock):
 
 
 
+
 class ToxCast:
 
-    def __init__(self, pchem, pAC50, passays, lsources, prresults):
+    def __init__(self, lsources, prresults):
 
-        self.pchem = pchem
-        self.pAC50 = pAC50
-        self.passays = passays
+        self.pchem = PR_DATA + "invitroDBV3_2019/INVITRODB_V3_1_SUMMARY/Chemical_Summary_190226.csv"
+        self.pAC50 = PR_DATA + "invitroDBV3_2019/INVITRODB_V3_1_SUMMARY/ac50_Matrix_190226.csv"
+        self.passays = PR_DATA + "invitroDBV3_2019/INVITRODB_V3_1_SUMMARY/Assay_Summary_190226.csv"
         self.lsource = lsources
         self.prresults = prresults
-
+        self.version = "InVitroDB 3.1"
+        self.update = "March-2019"
 
 
     def loadAssays(self):
@@ -241,6 +244,27 @@ class ToxCast:
         return "ERROR"
 
 
+    def writebyChemical(self, prout):
+
+        lassays = list(self.dassays.keys())
+
+        for chem in self.dchem.keys():
+            pfileAC50 = prout + chem + ".csv"
+            fileAC50 = open(pfileAC50, "w")
+            fileAC50.write("CASRN\t" + "\t".join(lassays) + "\n")
+            fileAC50.write(str(chem))
+            for assay in lassays:
+                if assay in list(self.dchem[chem].activeAssays.keys()):
+                    fileAC50.write("\t" + str(self.dchem[chem].activeAssays[assay]))
+                elif assay in self.dchem[chem].inactiveAssays:
+                    fileAC50.write("\t1000000")
+                else:
+                    fileAC50.write("\tNA")
+            fileAC50.close()
+
+        return prout
+
+
     def writeAssaysResult(self, pfileAC50):
 
 
@@ -269,11 +293,7 @@ class ToxCast:
 
 
     def filterFormatAssaysResult(self, pfileAC50, cutoffChemical = 100, log=1, cor=0.9 ):
-
-
         runExternalScript.cleanAssayResult(pfileAC50, cutoffChemical, log, cor)
-
-
         return
 
 
