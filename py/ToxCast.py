@@ -33,6 +33,8 @@ def fromatAssaysBlock(AssaysBlock):
 
     lout = []
     for lineAssays in llinesAssays[1:]:
+        # remove extra " in the line
+        lineAssays = lineAssays.replace("\"", "")
         lelem = lineAssays.strip().split(",")
         if len(lelem) == 84:
             lout.append(lelem)
