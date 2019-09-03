@@ -1,59 +1,31 @@
 from copy import deepcopy
 from os import path
+import numpy
 
 import Assays
 import ChemCAS
 import runExternalScript
+import toolbox
 
 # define the dataset folder
 PR_DATA = "/home/borrela2/data/"
-
-
-def fromatAssaysBlock(AssaysBlock):
-
-    # format split \n
-    AssaysBlock = list(AssaysBlock)
-    i = 0
-    imax = len(AssaysBlock)
-    flagopen = 0
-    while i < imax:
-        if AssaysBlock[i] == "\"" and flagopen == 0:
-            flagopen = 1
-        elif AssaysBlock[i] == "\"" and flagopen == 1:
-            flagopen = 0
-
-        if flagopen == 1 and AssaysBlock[i] == "\n":
-            AssaysBlock[i] = " "
-        elif flagopen == 1 and AssaysBlock[i] == ",":
-            AssaysBlock[i] = " "
-
-        i = i + 1
-
-    llinesAssays = "".join(AssaysBlock).split("\n")
-
-    lout = []
-    for lineAssays in llinesAssays[1:]:
-        # remove extra " in the line
-        lineAssays = lineAssays.replace("\"", "")
-        lelem = lineAssays.strip().split(",")
-        if len(lelem) == 84:
-            lout.append(lelem)
-
-
-    return lout
-
-
 
 
 
 
 class ToxCast:
 
-    def __init__(self, lsources, prresults):
+    def __init__(self, lsources, prresults, pchem = "", pAC50 = "", passays=''):
 
-        self.pchem = PR_DATA + "invitroDBV3_2019/INVITRODB_V3_1_SUMMARY/Chemical_Summary_190226.csv"
-        self.pAC50 = PR_DATA + "invitroDBV3_2019/INVITRODB_V3_1_SUMMARY/ac50_Matrix_190226.csv"
-        self.passays = PR_DATA + "invitroDBV3_2019/INVITRODB_V3_1_SUMMARY/Assay_Summary_190226.csv"
+        if pchem == "" or pAC50 == "" or passays == "":
+            self.pchem = PR_DATA + "invitroDBV3_2019/INVITRODB_V3_1_SUMMARY/Chemical_Summary_190226.csv"
+            self.pAC50 = PR_DATA + "invitroDBV3_2019/INVITRODB_V3_1_SUMMARY/ac50_Matrix_190226.csv"
+            self.passays = PR_DATA + "invitroDBV3_2019/INVITRODB_V3_1_SUMMARY/Assay_Summary_190226.csv"
+        else:
+            self.pchem = pchem
+            self.pAC50 = pAC50
+            self.passays = passays
+
         self.lsource = lsources
         self.prresults = prresults
         self.version = "InVitroDB 3.1"
@@ -66,7 +38,7 @@ class ToxCast:
         blockassays = fassays.read()
         fassays.close()
 
-        llassays = fromatAssaysBlock(blockassays)
+        llassays = toolbox.fromatAssaysBlock(blockassays)
         dout = {}
         for lassay in llassays:
             cassays = Assays.Assay(lassay)
@@ -80,6 +52,59 @@ class ToxCast:
                 dout[nameAssay] = cassays
 
         self.dassays = dout
+
+
+    def loacAC50byassays(self):
+        """
+        Not used because slow
+        """
+        if not "dassays" in self.__dict__:
+            self.loadAssays()
+
+        if not "dchem" in self.__dict__:
+            self.loadChem()
+            self.loadAC50()
+
+        print("Load")
+        dout = {}
+
+        fAC50 = open(self.pAC50, "r")
+        lchemAC50 = fAC50.readlines()
+        fAC50.close()
+
+        lassays = lchemAC50[0].strip().split(",")
+        nbassays = len(lassays)
+
+        ichem = 1
+        for assayAC50 in lchemAC50[1:500]:
+            lChemAC50 = assayAC50.strip().split(",")
+            chemID = lChemAC50[0]
+            chemID = chemID.replace("\"", "")
+            CASID = self.convertIDtoCAS(chemID)
+            ichem = ichem + 1
+            if ichem%100 == 0:
+                print("Load: ", ichem)
+
+            if CASID != "ERROR":
+                i = 0
+                while i < nbassays:
+                    assay = lassays[i]
+                    if not assay in list(dout.keys()):
+                        dout[assay] = {}
+                    dout[assay][CASID] = lchemAC50[i + 1]
+                    i = i + 1
+
+        self.dassaysAC50 = dout
+
+
+    def getTopActive(self, assay, ntop):
+
+        dAC50 = self.loadAC50forAssay(assay, notest=0)
+        lchem = list(dAC50.keys())
+        lval = list(dAC50.values())
+        vval = numpy.array(lval)
+        litop = numpy.argsort(vval)
+        return [lchem[i] for i in litop[:ntop]]
 
 
     def loadChem(self, ):
@@ -221,7 +246,7 @@ class ToxCast:
         fAC50.close()
 
         if lassaysin == []:
-            lassays = lchemIC50[0].strip().split(",")
+            lassays = lchemIC50[0].strip().replace("\"", "").split(",")
         else:
             lassays = lassaysin
 
@@ -234,6 +259,24 @@ class ToxCast:
 
             if CASID != "ERROR":
                 self.dchem[CASID].setIC50(lassays, lChemIC50)
+
+
+    def loadAC50forAssay(self, assaysName, notest):
+
+        if not "dchem" in self.__dict__:
+            self.loadChem()
+            self.loadAC50()
+
+        dassayout = {}
+        for chem in self.dchem.keys():
+            if assaysName in self.dchem[chem].notestAssays:
+                if notest == 1:
+                    dassayout[chem] = "NA"
+            elif assaysName in self.dchem[chem].inactiveAssays:
+                dassayout[chem] = 1000000
+            else:
+                dassayout[chem] = float(self.dchem[chem].activeAssays[assaysName])
+        return dassayout
 
 
 
