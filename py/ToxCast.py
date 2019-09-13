@@ -5,7 +5,7 @@ import numpy
 import Assays
 import ChemCAS
 import runExternalScript
-import toolbox
+import toolboxToxCast
 
 # define the dataset folder
 PR_DATA = "/home/borrela2/data/"
@@ -38,7 +38,7 @@ class ToxCast:
         blockassays = fassays.read()
         fassays.close()
 
-        llassays = toolbox.fromatAssaysBlock(blockassays)
+        llassays = toolboxToxCast.fromatAssaysBlock(blockassays)
         dout = {}
         for lassay in llassays:
             cassays = Assays.Assay(lassay)
