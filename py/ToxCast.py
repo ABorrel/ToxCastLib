@@ -4,7 +4,7 @@ import numpy
 
 import Assays
 import ChemCAS
-import runExternalScript
+import runForToxCast
 import toolboxToxCast
 
 # define the dataset folder
