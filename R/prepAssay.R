@@ -1,7 +1,8 @@
 #!/usr/bin/env Rscript
 
-# remove assays without enough data
-cleanChemical = function(dassays, cutoffassay){
+# remove chemical without enough data
+cleanChemical = function(dassays){
+  cutoffassay = dim(dassays)[2] * 0.85 # 15% of chemical tested at least
   dtemp = dassays
   i = 1
   imax = dim(dtemp)[1]
@@ -18,7 +19,7 @@ cleanChemical = function(dassays, cutoffassay){
   return(dtemp)
 }
 
-# remove chemical without enough assays results
+# remove assays without enough assays results
 cleanAssays = function(dassays, cutoffchem){
   dtemp = dassays
   i = 1
@@ -117,33 +118,41 @@ outersect <- function(x, y) {
 
 args <- commandArgs(TRUE)
 pAssays = args[1]
-cutoffchem = as.integer(args[2])
-cutoffassays = as.integer(args[3])
-logtransformation = args[4]
-corval = as.double(args[5])
-prout = args[6]
+pchem = args[2]
+logtransformation = args[3]
+corval = as.double(args[4])
+prout = args[5]
 
-#pAssays = "/home/borrela2/cancer/BBN/ModelAssays/AC50all.csv"
-#prout = "/home/borrela2/cancer/BBN/ModelAssays/"
-#cutoffchem = 7000
-#cutoffassays = 150
+#pAssays = "/home/borrela2/cancer/BBN/BF_model/1_ModelAssays_0.9_log1/AC50all.csv"
+#prout = "/home/borrela2/cancer/BBN/BF_model/1_ModelAssays_0.9_log1/"
+#pchem = "/home/borrela2/cancer/BBN/MAPPING/ToxValDB/Chem_ToxValscore.txt_TEST"
 #logtransformation = "1"
 #corval= 0.80
 
 dassays = read.csv(pAssays, sep = "\t", header = TRUE)
 rownames(dassays) = dassays[,1]
 dassays = dassays[,-1]
+print("=====")
+print(paste("=== nb assays: ", dim(dassays)[2], sep = ""))
+print(paste("=== nb chem: ", dim(dassays)[1], sep = ""))
+print("=== Reduce based on the chemical set of interest ===")
+dchem = read.csv(pchem, sep = "\t", header = TRUE)
+rownames(dchem) = dchem[,1]
+dchem = dchem[,-1]
+lchem = intersect(rownames(dchem), rownames(dassays))
+cutoffchem = length(lchem) - (0.15*length(lchem))
+dassays = dassays[lchem,]
+print(paste("=== nb assays: ", dim(dassays)[2], sep = ""))
+print(paste("=== nb chem: ", dim(dassays)[1], sep = ""))
 
 # generate the correlation matrix with all assays
 dcor = generateCorAssaysMatrix(dassays, prout)
 
-print("=====")
-print(paste("=== nb assays: ", dim(dassays)[2], sep = ""))
-print(paste("=== nb chem: ", dim(dassays)[1], sep = ""))
+
 dassays = cleanAssays(dassays, cutoffchem) #reduce on assays
 print(paste("=== nb assays after cutoff chemical active: ", dim(dassays)[2], sep = ""))
-dassays = cleanChemical(dassays, cutoffassays) #reduce on chemical
-print(paste("=== nb assays after cutoff assays active: ", dim(dassays)[1], sep = ""))
+dassays = cleanChemical(dassays) #reduce on chemical
+print(paste("=== nb chemical after cutoff assays active: ", dim(dassays)[1], sep = ""))
 lassaysdel = reduceMatrix(dcor, dassays, corval)
 lkeep = outersect(colnames(dassays), lassaysdel)
 dassays = dassays[,lkeep]
@@ -154,5 +163,4 @@ if(logtransformation == 1){
 }
 
 # write assays clean
-write.csv(dassays, paste(prout, "Massays_",  cutoffchem, "-", cutoffassays, "_", corval, "_log", logtransformation, ".csv", sep = ""))
-
+write.csv(dassays, paste(prout, "Massays_", corval, "_log", logtransformation, ".csv", sep = ""))

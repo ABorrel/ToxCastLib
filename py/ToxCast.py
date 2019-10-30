@@ -1,6 +1,7 @@
 from copy import deepcopy
 from os import path
 import numpy
+from re import search
 
 import Assays
 import ChemCAS
@@ -32,7 +33,7 @@ class ToxCast:
         self.update = "March-2019"
 
 
-    def loadAssays(self):
+    def loadAssays(self, lassays=[]):
 
         fassays = open(self.passays, "r", encoding="utf8", errors='ignore')
         blockassays = fassays.read()
@@ -43,6 +44,8 @@ class ToxCast:
         for lassay in llassays:
             cassays = Assays.Assay(lassay)
             nameAssay = cassays.charac["assay_component_endpoint_name"]
+            if lassays != [] and not nameAssay in lassays:
+                continue
 
             if self.lsource != []:
                 #print cassys.charac["assay_source_name"]
@@ -53,8 +56,78 @@ class ToxCast:
 
         self.dassays = dout
 
+    def getUniqueAssayCharac(self, typeCharac):
+        if not "dassays" in self.__dict__:
+            self.loadAssays()
 
-    def loacAC50byassays(self):
+        lout = []
+        for assay in self.dassays.keys():
+            try: lout.append(self.dassays[assay].charac[typeCharac])
+            except: pass
+        
+        lout = list(set(lout))
+        return lout
+
+    def getAssaysByCharacVal(self, characK, characV):
+        if not "dassays" in self.__dict__:
+            self.loadAssays()
+
+        lout = []
+        for assay in self.dassays.keys():
+            if characK in list(self.dassays[assay].charac.keys()):
+                if self.dassays[assay].charac[characK] == characV:
+                    lout.append(assay)
+        return lout
+    
+
+    def getChemTestedByAssays(self, assay_name):
+        if not "dassays" in self.__dict__:
+            self.loadAssays()
+
+        if not "dchem" in self.__dict__:
+            self.loadChem()
+            self.loadAC50()
+        
+        dchemTested = self.loadAC50forAssay(assay_name, notest=0)
+        return list(dchemTested.keys())
+
+
+    def writeAssaysTable(self, lprop, prout):
+
+        if not "dassays" in self.__dict__:
+            self.loadAssays()
+        
+        pfilout = prout + "AssaysTable.csv"
+        filout = open(pfilout, "w")
+        filout.write("name\t%s\n"%("\t".join(lprop)))
+        for assay in self.dassays.keys():
+            filout.write("%s\t%s\n"%(assay, "\t".join([str(self.dassays[assay].charac[prop]) for prop in lprop])))
+        filout.close()
+        return pfilout
+
+
+    def removeNoTargetedAssays(self):
+        """
+        Dell assays without interest for chemical prediction i.e. interference assays / channel (keep only ratio) 
+        """
+        i = 0
+        lassays = list(self.dassays.keys())
+        imax = len(lassays)
+        while i < imax:
+            nameAssays = lassays[i]
+            if search("TOX21_AutoFluor", nameAssays):
+                del self.dassays[lassays[i]]
+                del lassays[i]
+                imax = imax - 1
+            elif nameAssays.split("_")[-1] == "ch1" or nameAssays.split("_")[-1] == "ch2":
+                del self.dassays[lassays[i]]
+                del lassays[i]
+                imax = imax - 1
+            else:
+                i = i + 1
+
+
+    def loadAC50byassays(self):
         """
         Not used because slow
         """
