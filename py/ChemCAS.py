@@ -46,24 +46,46 @@ class ChemCAS:
 
 
 
-    def setIC50(self, lassays, lIC50):
+    def setIC50(self, lassaysin, lassaysAll, lIC50, verbose = 0):
 
+        """
+        param:
+        - lassaysin: preselected list of assays
+        - assayAll: all assays 
+        """
 
         i = 1
-        imax = len(lassays)
+        imax = len(lIC50)
         lnotest = []
         dactive = {}
         linactive = []
 
-        while i < imax:
-            AC50 = lIC50[i]
-            if AC50 == "NA":
-                lnotest.append(lassays[i])
-            elif AC50 == "1e+06":
-                linactive.append(lassays[i])
-            else:
-                dactive[lassays[i]] = AC50
-            i += 1
+        if verbose == 1: print(lIC50)
+
+        if lassaysin == []: # case no specific assays
+            while i < imax:
+                AC50 = lIC50[i]
+                if AC50 == "NA":
+                    lnotest.append(lassaysAll[i])
+                elif AC50 == "1e+06":
+                    linactive.append(lassaysAll[i])
+                else:
+                    dactive[lassaysAll[i]] = AC50
+                i += 1
+        else:
+            while i < imax:
+                AC50 = lIC50[i]
+                assay = lassaysAll[i]
+                if not assay in lassaysin:
+                    i = i + 1
+                    continue
+                if AC50 == "NA":
+                    lnotest.append(lassaysAll[i])
+                elif AC50 == "1e+06":
+                    linactive.append(lassaysAll[i])
+                else:
+                    dactive[lassaysAll[i]] = AC50
+                i += 1
 
         self.activeAssays = dactive
         self.notestAssays = lnotest

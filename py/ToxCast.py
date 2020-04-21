@@ -9,8 +9,8 @@ import runForToxCast
 import toolboxToxCast
 
 # define the dataset folder
-PR_DATA = "/home/borrela2/data/"
-
+#PR_DATA = "/home/borrela2/data/"
+PR_DATA = "C:/Users/Aborrel/research/NIEHS/data/"
 
 
 
@@ -55,6 +55,7 @@ class ToxCast:
                 dout[nameAssay] = cassays
 
         self.dassays = dout
+        return dout
 
     def getUniqueAssayCharac(self, typeCharac):
         if not "dassays" in self.__dict__:
@@ -318,10 +319,7 @@ class ToxCast:
         lchemIC50 = fAC50.readlines()
         fAC50.close()
 
-        if lassaysin == []:
-            lassays = lchemIC50[0].strip().replace("\"", "").split(",")
-        else:
-            lassays = lassaysin
+        lassayAll = lchemIC50[0].strip().replace("\"", "").split(",")
 
         for chemIC50 in lchemIC50[1:]:
             lChemIC50 = chemIC50.strip().split(",")
@@ -331,8 +329,27 @@ class ToxCast:
             CASID = self.convertIDtoCAS(chemID)
 
             if CASID != "ERROR":
-                self.dchem[CASID].setIC50(lassays, lChemIC50)
+                if CASID == "1244-76-4":
+                    self.dchem[CASID].setIC50(lassaysin, lassayAll, lChemIC50, verbose=1)
+                else:
+                    self.dchem[CASID].setIC50(lassaysin, lassayAll, lChemIC50)
 
+
+    def get_countOfAssaytestedByChem(self, pr_out):
+
+        dout = {}
+        for chem in self.dchem.keys():
+            #print("====",chem, "=====")
+            #print (len(self.dchem[chem].activeAssays), len(self.dchem[chem].inactiveAssays), len(self.dchem[chem].notestAssays))
+            dout[chem] = len(self.dchem[chem].activeAssays) + len(self.dchem[chem].inactiveAssays)
+
+        pfilout = pr_out + "count_assay"
+        #print(pfilout)
+        filout = open(pfilout, "w")
+        filout.write("Chemical\tAssay tested\n")
+        for chem in dout.keys():
+            filout.write("%s\t%s\n"%(chem, dout[chem]))
+        filout.close()
 
     def loadAC50forAssay(self, assaysName, notest):
 
