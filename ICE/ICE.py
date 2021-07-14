@@ -1,5 +1,5 @@
 from .toolbox import loadMatrixToList
-from .chemicals import chemicals
+from .chemical import chemical
 from .record import record
 
 class ICE:
@@ -12,15 +12,14 @@ class ICE:
     def loadICE(self):
 
         l_linesICE = loadMatrixToList(self.p_ICE, sep = "\t")
-        self.chem = chemicals(l_linesICE)
-        self.chem.loadChem()
-
         self.loadAllRecord(l_linesICE)
 
 
     def loadAllRecord(self, l_linesICE):
 
         self.resultEndpoint = {}
+        self.chemicals = {}
+
         i = 0
         imax= len(l_linesICE)
         for lineICE in l_linesICE:
@@ -28,9 +27,15 @@ class ICE:
             if i % 10000 == 0:
                 print("Load %s/%s"%(i, imax))
             i = i + 1
+            
+            casrn = l_elem[3]
+            try: self.chemicals[casrn]
+            except: self.chemicals[casrn] = chemical(l_elem)
+
             endpoint = l_elem[5]
-            if not endpoint in list(self.resultEndpoint.keys()):
-                self.resultEndpoint[endpoint] = record()
+            try: self.resultEndpoint[endpoint]
+            except: self.resultEndpoint[endpoint] = record()
+                
             
             self.resultEndpoint[endpoint].CASRN.append(l_elem[3])
             self.resultEndpoint[endpoint].RecordID.append(l_elem[1])
