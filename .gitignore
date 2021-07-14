@@ -1,0 +1,5 @@
+.pypi
+**/__pycache__/**
+**/invitroDB_py.egg-info/**
+**/build/**
+**/dist/**
