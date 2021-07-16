@@ -1,4 +1,6 @@
-from .toolbox import loadMatrixToList
+from copy import deepcopy
+
+from toolbox import loadMatrixToList
 from .chemical import chemical
 from .record import record
 
@@ -9,13 +11,13 @@ class ICE:
         self.p_ICE = p_ICE
 
 
-    def loadICE(self):
+    def load_ICE(self):
 
-        l_linesICE = loadMatrixToList(self.p_ICE, sep = "\t")
-        self.loadAllRecord(l_linesICE)
+        l_linesICE = loadMatrixToList(self.p_ICE)
+        self.load_AllRecord(l_linesICE)
 
 
-    def loadAllRecord(self, l_linesICE):
+    def load_AllRecord(self, l_linesICE):
 
         self.resultEndpoint = {}
         self.chemicals = {}
@@ -24,7 +26,7 @@ class ICE:
         imax= len(l_linesICE)
         for lineICE in l_linesICE:
             l_elem = lineICE.split("\t")
-            if i % 10000 == 0:
+            if i % 100000 == 0:
                 print("Load %s/%s"%(i, imax))
             i = i + 1
             
@@ -48,7 +50,12 @@ class ICE:
             self.resultEndpoint[endpoint].ResponseUnit.append(l_elem[12])
 
 
-    def loadByEndpoints(self, l_endpoints):
 
-        return 
+    def get_resultsByEndpoints(self, aenm):
+        if not "resultEndpoint" in self.__dict__:
+            self.load_ICE()
+
+        return deepcopy(self.resultEndpoint[aenm])
+
+
 

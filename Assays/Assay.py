@@ -50,3 +50,35 @@ class Component:
         self.charac["assay_design_type"] = d_in["assay_design_type"]
 
 
+class Endpoint:
+
+    def __init__(self, d_in):
+
+        self.charac = {}
+        self.charac["aeid"] = d_in["aeid"]    
+        self.charac["acid"] = d_in["acid"]
+        self.charac["assay_component_endpoint_name"] = d_in["assay_component_endpoint_name"]
+        self.charac["export_ready"] = d_in["export_ready"]
+        self.charac["internal_ready"] = d_in["internal_ready"]
+        self.charac["assay_component_endpoint_desc"] = d_in["assay_component_endpoint_desc"]
+        self.charac["assay_function_type"] = d_in["assay_function_type"]
+        self.charac["normalized_data_type"] = d_in["normalized_data_type"]
+        self.charac["analysis_direction"] = d_in["analysis_direction"]
+        self.charac["burst_assay"] = d_in["burst_assay"]
+        self.charac["key_positive_control"] = d_in["key_positive_control"]
+        self.charac["signal_direction"] = d_in["signal_direction"]
+        self.charac["intended_target_type"] = d_in["intended_target_type"]
+        self.charac["intended_target_type_sub"] = d_in["intended_target_type_sub"]
+        self.charac["intended_target_family"] = d_in["intended_target_family"]
+        self.charac["intended_target_family_sub"] = d_in["intended_target_family_sub"]
+        self.charac["fit_all"] = d_in["fit_all"]
+        self.charac["cell_viability_assay"] = d_in["cell_viability_assay"]
+        self.charac["data_usability"] = d_in["data_usability"]
+
+
+        																
+
+
+
+
+        pass

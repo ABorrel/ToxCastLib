@@ -1,6 +1,3 @@
-
-
-
 class chemical:
 
     def __init__(self, l_in):

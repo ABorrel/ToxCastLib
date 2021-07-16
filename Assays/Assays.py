@@ -1,5 +1,5 @@
-from .toolbox import loadExcelSheet
-from .Assay import Characteristic, Component
+from toolbox import loadExcelSheet
+from .Assay import Characteristic, Component, Endpoint
 
 
 class Assays:
@@ -58,6 +58,6 @@ class Assays:
         d_end_xlx = loadExcelSheet(self.p_assay_sum, "assay.component.endpoint", "aeid")
         self.c_Endpoint = {}
         for aeid in d_end_xlx.keys():
-            cEnd = Component(d_end_xlx[aeid])
+            cEnd = Endpoint(d_end_xlx[aeid])
             self.c_Endpoint[aeid] = cEnd
 
