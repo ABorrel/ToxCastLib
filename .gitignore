@@ -1,5 +1,5 @@
 .pypi
 **/__pycache__/**
-**/invitroDB_py.egg-info/**
+**/ToxCastLib.egg-info/**
 **/build/**
 **/dist/**

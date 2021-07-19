@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="ToxCast_lib", # Replace with your own username
-    version="0.1",
+    name="ToxCastLib", # Replace with your own username
+    version="0.2.1",
     author="Alexandre Borrel",
     author_email="a.borrel@gmail.com",
     description="Load in python the invitroDB3.3 with ToxCast assay results",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ABorrel/ToxCast_lib",
+    url="https://github.com/ABorrel/ToxCastLib",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

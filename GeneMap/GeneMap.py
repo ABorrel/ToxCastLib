@@ -1,4 +1,4 @@
-from toolbox import loadExcelSheet
+from toolboxLib import loadExcelSheet
 from .Map import Map
 
 class GeneMap:
