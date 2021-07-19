@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from toolbox import loadMatrixToList
+from toolboxLib import loadMatrixToList
 from .chemical import chemical
 from .record import record
 
