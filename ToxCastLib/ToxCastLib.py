@@ -64,7 +64,7 @@ class ToxCastLib:
 
         p_filout = pr_out + "-".join(l_genes) + ".csv"
         filout = open(p_filout, "w")
-        filout.write("CASRN\t%s\n"%("\t".join(["%s\t%s_unit"%(aenm, aenm) for aenm in d_out.keys()])))
+        filout.write("CASRN\tChemical.name\t%s\n"%("\t".join(["%s\t%s_unit"%(aenm, aenm) for aenm in d_out.keys()])))
 
         for chem in l_chem_tested:
             w = []
@@ -81,7 +81,7 @@ class ToxCastLib:
                     w.append("NT")
                     w.append("NA")
             
-            filout.write(chem + "\t" + "\t".join(w) + "\n")
+            filout.write(chem + "\t" + self.c_ICE.chemicals[chem].name + "\t" + "\t".join(w) + "\n")
         filout.close()
         return p_filout
 
