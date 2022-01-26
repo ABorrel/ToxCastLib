@@ -1,6 +1,8 @@
 from os import path
 
 import unittest
+
+from sklearn.metrics import coverage_error
 import ToxCastLib
 
 p_ICE = "/mnt/d/database/invitroDB3.3_7-14-21/ICE_invitroDB3.3_7-14-21/cHTS2021_invitrodb33_20210128.txt"
@@ -10,10 +12,9 @@ p_gene_mapping = "/mnt/d/database/invitroDB3.3_7-14-21/EPA_invitroDB-3.3_7-14-21
 
 class TestToxCastLib(unittest.TestCase):
     
-    def test_loadDATA(self):
+    """def test_loadDATA(self):
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         cInvitroDB.load_AssaysAndICEAndGeneMap()
-
         self.assertEqual(cInvitroDB.err, 0)
     
     def test_findEndpoints(self):
@@ -29,33 +30,28 @@ class TestToxCastLib(unittest.TestCase):
         print(name_endpoint)
         self.assertEqual(name_endpoint, "NVS_ADME_hCYP19A1")
 
-    
-
     def test_getAssaysResultsFromGene(self):
 
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         p_out = cInvitroDB.get_resultTableFromGenes(["CYP19A1"], "/mnt/c/Users/AlexandreBorrel/research/development/ToxCastLib/sources/tests/")
-
         self.assertEqual(path.exists(p_out), True)
+    
+    def test_getToxCastResultByChem(self):
+        
+        CASRN = "60-35-5"
+        cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
+        result_ToxCast = cInvitroDB.get_ToxCastResultByChem(CASRN)
+        self.assertEqual(type(result_ToxCast), dict)"""
+    
+    def test_getCoverageAssayTestedByChem(self):
+
+        CASRN = "60-35-5"
+        cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
+        d_coverage = cInvitroDB.get_coverageTestedByChem(CASRN)
+        print(d_coverage)
+        self.assertEqual(d_coverage["coverage"], 0.34618834080717487)
+       
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-#import ToxCast
-
-
-
-#prtest = "./../../trash/"
-#pchem = prtest + "INVITRODB_V3_1_SUMMARY/Chemical_Summary_190226.csv"
-#pAC50 = prtest + "INVITRODB_V3_1_SUMMARY/ac50_Matrix_190226.csv"
-#passays = prtest + "INVITRODB_V3_1_SUMMARY/Assay_Summary_190226.csv"
-
-
-#cToxCast = ToxCast.ToxCast([], prtest, pchem, pAC50, passays)
-#ltopChem = cToxCast.getTopActive("TOX21_MMP_rhodamine", 10)
-
-#print(",".join(ltopChem))
-#print(ltopChem)
 

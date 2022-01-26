@@ -74,11 +74,3 @@ class Endpoint:
         self.charac["fit_all"] = d_in["fit_all"]
         self.charac["cell_viability_assay"] = d_in["cell_viability_assay"]
         self.charac["data_usability"] = d_in["data_usability"]
-
-
-        																
-
-
-
-
-        pass

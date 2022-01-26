@@ -14,6 +14,9 @@ PR_DATA = "C:/Users/Aborrel/research/NIEHS/data/"
 
 
 
+### NOT USE NEED TO BE REINTEGRATED IN TOXCASTLIB
+
+
 class ToxCast:
 
     def __init__(self, lsources, prresults, pchem = "", pAC50 = "", passays=''):
@@ -31,7 +34,6 @@ class ToxCast:
         self.prresults = prresults
         self.version = "InVitroDB 3.1"
         self.update = "March-2019"
-
 
     def loadAssays(self, lassays=[]):
 
@@ -79,7 +81,6 @@ class ToxCast:
                 if self.dassays[assay].charac[characK] == characV:
                     lout.append(assay)
         return lout
-    
 
     def getChemTestedByAssays(self, assay_name):
         if not "dassays" in self.__dict__:
@@ -91,7 +92,6 @@ class ToxCast:
         
         dchemTested = self.loadAC50forAssay(assay_name, notest=0)
         return list(dchemTested.keys())
-
 
     def writeAssaysTable(self, lprop, prout):
 
@@ -105,7 +105,6 @@ class ToxCast:
             filout.write("%s\t%s\n"%(assay, "\t".join([str(self.dassays[assay].charac[prop]) for prop in lprop])))
         filout.close()
         return pfilout
-
 
     def removeNoTargetedAssays(self):
         """
@@ -126,7 +125,6 @@ class ToxCast:
                 imax = imax - 1
             else:
                 i = i + 1
-
 
     def loadAC50byassays(self):
         """
@@ -170,7 +168,6 @@ class ToxCast:
 
         self.dassaysAC50 = dout
 
-
     def getTopActive(self, assay, ntop):
 
         dAC50 = self.loadAC50forAssay(assay, notest=0)
@@ -179,7 +176,6 @@ class ToxCast:
         vval = numpy.array(lval)
         litop = numpy.argsort(vval)
         return [lchem[i] for i in litop[:ntop]]
-
 
     def loadChem(self, ):
 
@@ -195,7 +191,6 @@ class ToxCast:
             cchem.setChem()
 
             self.dchem[cchem.CASID] = cchem
-
 
     def loadChemSpFilter(self, cutoffActive):
 
@@ -312,7 +307,6 @@ class ToxCast:
 
         return [pchemfilout, passaysfilout]
 
-
     def loadAC50(self, lassaysin=[]):
 
         fAC50 = open(self.pAC50, "r")
@@ -368,8 +362,6 @@ class ToxCast:
                 dassayout[chem] = float(self.dchem[chem].activeAssays[assaysName])
         return dassayout
 
-
-
     def convertIDtoCAS(self, chemID):
 
         for CASID in self.dchem.keys():
@@ -377,7 +369,6 @@ class ToxCast:
                 return CASID
 
         return "ERROR"
-
 
     def writebyChemical(self, prout):
 
@@ -398,7 +389,6 @@ class ToxCast:
             fileAC50.close()
 
         return prout
-
 
     def writeAssaysResult(self, pfileAC50):
 
@@ -425,7 +415,6 @@ class ToxCast:
             fileAC50.close()
 
             return pfileAC50
-
 
     def filterFormatAssaysResult(self, pfileAC50, cutoffChemical = 100, log=1, cor=0.9 ):
         runExternalScript.cleanAssayResult(pfileAC50, cutoffChemical, log, cor)

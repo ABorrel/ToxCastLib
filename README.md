@@ -9,7 +9,6 @@ Python library to load the Tox21-ToxCast assays from the invitroDB effort
 Using the invitroDB3.3 and the filtering from ICE for activities cleaning - Data needs to be unziped
 - EPA invitroDB3.3 dataset (https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data)
 - ICE invitroDB cleaning (https://ice.ntp.niehs.nih.gov/downloads/DataonICE/cHTS2021_invitrodb33_20210128.zip)
-
 - Specify file from invritoDB in the invitroDB class
 
 

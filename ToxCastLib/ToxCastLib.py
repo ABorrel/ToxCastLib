@@ -1,3 +1,4 @@
+from pickle import FALSE, TRUE
 from Assays import Assays
 from ICE import ICE
 from GeneMap import GeneMap
@@ -23,7 +24,6 @@ class ToxCastLib:
         self.c_ICE.load_ICE()
         self.c_geneMap.loadMapping()
 
-
     def get_EndpointByGene(self, l_genes):
         """
         input: a list of genes
@@ -39,15 +39,12 @@ class ToxCastLib:
         
         return l_out
 
-
     def get_aenmFromaied(self, aeid):
 
         if not "c_Endpoint" in self.c_Assays.__dict__:
             self.c_Assays.load_aeid()
 
         return self.c_Assays.c_Endpoint[aeid].charac["assay_component_endpoint_name"]
-
-
 
     def get_resultTableFromGenes(self, l_genes, pr_out):
 
@@ -85,35 +82,55 @@ class ToxCastLib:
         filout.close()
         return p_filout
 
-
-    def ratioActiveAssays(self, typeofCharac, cAssays):
     
+    def get_coverageTestedByChem(self, CASRN, store=FALSE):
+        """Function used to compute the coverage of assay tested
 
-        lcharac = cAssays.getlistCharac(typeofCharac)
+        Args:
+            CASRN (str): [description]
+            store (bool, optional): Use to sore the mapping.
 
-        #print(lcharac)
-        #print(cAssays.dassays.keys())
+        Returns:
+            [dictionnary]: dictionnary with the number of assays tested and non tested with the coverage score
+        """
+        d_toxcast = self.get_ToxCastResultByChem(CASRN, store) 
+        coverage = float(len(d_toxcast["List tested assays"]))/(len(d_toxcast["List tested assays"]) + len(d_toxcast["List assays no tested"]))
+        d_out = {"Nb assays tested":len(d_toxcast["List tested assays"]), "Nb no tested":  len(d_toxcast["List assays no tested"]), "coverage": coverage}
+        return d_out
+    
+    
+    def get_ToxCastResultByChem(self, CASRN, store = False):
+        """
+        Args:
+            CASRN (str): CASRN of chemical of interest 
+            store (bool, optional): Store create a new variable that store the mapping. Defaults to False.
+        Return:
+            Dictionnary with list of AC50, assays tested, list of unit and assays no tested
+        """
+        # need to extract all assays with the chemicals
+        # load ICE
+        if not "resultEndpoint" in self.__dict__:
+            self.c_ICE.load_ICE()
 
-        dout = {}
-        for charac in lcharac:
-            dout[charac] = {"active":0, "inactive":0, "notest":0}
-
-        if not "activeAssays" in self.__dict__:
-            self.enrich = {}
-            return
-
-        for actAssays in self.activeAssays.keys():
-            #print(cAssays.dassays[actAssays].charac[typeofCharac], "DDDD")
-            charac = cAssays.dassays[actAssays].charac[typeofCharac]
-            dout[charac]["active"] = dout[charac]["active"] + 1
-
-        for inactAssays in self.inactiveAssays:
-            charac = cAssays.dassays[inactAssays].charac[typeofCharac]
-            dout[charac]["inactive"] = dout[charac]["inactive"] + 1
-
-        for notest in self.notestAssays:
-            charac = cAssays.dassays[notest].charac[typeofCharac]
-            dout[charac]["notest"] = dout[charac]["notest"] + 1
-
-        self.enrich = {}
-        self.enrich[typeofCharac] = dout
+        # define a variable to store mapping
+        if store == True:
+            if not "d_chem_mapped" in self.__dict__:
+                self.d_chem_mapped = {}
+            
+            if CASRN in list(self.d_chem_mapped):
+                return self.d_chem_mapped[CASRN]
+        
+        d_out = {"List tested assays":[], "List AC50 or QC":[], "List assays no tested":[]}
+        for endpoint in self.c_ICE.resultEndpoint.keys():
+            try: 
+                self.c_ICE.resultEndpoint[endpoint].CASRN.index(CASRN)
+                d_out["List AC50 or QC"].append(self.c_ICE.resultEndpoint[endpoint].Response)
+                d_out["List tested assays"].append(endpoint)
+                d_out["Unit"].append(self.c_ICE.resultEndpoint[endpoint].ResponseUnit)
+            except:
+                d_out["List assays no tested"].append(endpoint)
+        
+        if store == TRUE:
+            self.d_chem_mapped[CASRN] = d_out
+        
+        return d_out
