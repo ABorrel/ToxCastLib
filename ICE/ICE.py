@@ -22,9 +22,9 @@ class ICE:
         self.resultEndpoint = {}
         self.chemicals = {}
 
-        i = 0
+        i = 1
         imax= len(l_linesICE)
-        for lineICE in l_linesICE:
+        for lineICE in l_linesICE[1:]:
             l_elem = lineICE.split("\t")
             if i % 100000 == 0:
                 print("Load %s/%s"%(i, imax))

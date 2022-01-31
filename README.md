@@ -24,6 +24,7 @@ Using the invitroDB3.3 and the filtering from ICE for activities cleaning - Data
 
 
 ## Usefull command lines
-$python -m unittest tests/TestToxCastLib.py #unit test on Chemical class
-$python setup.py sdist bdist_wheel
-$python -m twine upload --repository testpypi dist/* #upload on testpypi and precise the version
+>$python -m unittest tests/TestToxCastLib.py #unit test on Chemical class<br>
+$python setup.py sdist bdist_wheel <br>
+$python -m twine upload --repository testpypi dist/ToxCastLib-* #upload on testpypi and precise the version<br>
+$pip install -i https://test.pypi.org/simple/ ToxCastLib==0.2.5

@@ -18,6 +18,11 @@ class ToxCastLib:
         self.c_ICE = ICE.ICE(self.p_ICE)
         self.c_geneMap = GeneMap.GeneMap(self.p_geneMap)
         self.err = 0
+        
+        # filter apply on function to select part of the results
+        self.l_type_assay_toselect = []
+        self.l_assay_toselect = []
+        
 
     def load_AssaysAndICEAndGeneMap(self):
         self.c_Assays.loadAll()
@@ -45,6 +50,19 @@ class ToxCastLib:
             self.c_Assays.load_aeid()
 
         return self.c_Assays.c_Endpoint[aeid].charac["assay_component_endpoint_name"]
+
+    def get_aeidByNnameEndpoint(self, endpoint_in):
+        
+        if not "c_Endpoint" in self.c_Assays.__dict__:
+            self.c_Assays.load_aeid()
+        
+        for aeid in self.c_Assays.c_Endpoint.keys():
+            endpoint = self.c_Assays.c_Endpoint[aeid].charac["assay_component_endpoint_name"]
+            
+            if endpoint == endpoint_in:
+                return aeid
+        
+        return  0
 
     def get_resultTableFromGenes(self, l_genes, pr_out):
 
@@ -81,9 +99,8 @@ class ToxCastLib:
             filout.write(chem + "\t" + self.c_ICE.chemicals[chem].name + "\t" + "\t".join(w) + "\n")
         filout.close()
         return p_filout
-
     
-    def get_coverageTestedByChem(self, CASRN, store=FALSE):
+    def get_coverageTestedAssayByChem(self, CASRN, store=FALSE):
         """Function used to compute the coverage of assay tested
 
         Args:
@@ -94,11 +111,36 @@ class ToxCastLib:
             [dictionnary]: dictionnary with the number of assays tested and non tested with the coverage score
         """
         d_toxcast = self.get_ToxCastResultByChem(CASRN, store) 
-        coverage = float(len(d_toxcast["List tested assays"]))/(len(d_toxcast["List tested assays"]) + len(d_toxcast["List assays no tested"]))
-        d_out = {"Nb assays tested":len(d_toxcast["List tested assays"]), "Nb no tested":  len(d_toxcast["List assays no tested"]), "coverage": coverage}
+        coverage = float(len(d_toxcast["List tested assays"]))/(len(d_toxcast["List tested assays"]) + len(d_toxcast["List no tested assays"]))
+        d_out = {"Nb assays tested":len(d_toxcast["List tested assays"]), "Nb no tested":  len(d_toxcast["List no tested assays"]), "coverage": coverage}
         return d_out
+
+    def get_listAllEndpoint(self):
+        
+        l_out = []
+        
+        if not "c_Endpoint" in self.c_Assays.__dict__:
+            self.c_Assays.load_aeid()
+        
+        for aeid in self.c_Assays.c_Endpoint.keys():
+            endpoint = self.c_Assays.c_Endpoint[aeid].charac["assay_component_endpoint_name"]
+            l_out.append(endpoint) 
+        
+        return l_out
     
-    
+    def get_listAllAssayFunctionType(self):
+        l_out = []
+        
+        if not "c_Endpoint" in self.c_Assays.__dict__:
+            self.c_Assays.load_aeid()
+        
+        for aeid in self.c_Assays.c_Endpoint.keys():
+            function_type = self.c_Assays.c_Endpoint[aeid].charac["assay_function_type"]
+            if not function_type in l_out:
+                l_out.append(function_type) 
+        
+        return l_out
+        
     def get_ToxCastResultByChem(self, CASRN, store = False):
         """
         Args:
@@ -109,7 +151,7 @@ class ToxCastLib:
         """
         # need to extract all assays with the chemicals
         # load ICE
-        if not "resultEndpoint" in self.__dict__:
+        if not "resultEndpoint" in self.c_ICE.__dict__:
             self.c_ICE.load_ICE()
 
         # define a variable to store mapping
@@ -120,15 +162,22 @@ class ToxCastLib:
             if CASRN in list(self.d_chem_mapped):
                 return self.d_chem_mapped[CASRN]
         
-        d_out = {"List tested assays":[], "List AC50 or QC":[], "List assays no tested":[]}
+        d_out = {"List tested assays":[], "List AC50 or QC":[], "List no tested assays":[], "Unit":[]}
         for endpoint in self.c_ICE.resultEndpoint.keys():
-            try: 
-                self.c_ICE.resultEndpoint[endpoint].CASRN.index(CASRN)
-                d_out["List AC50 or QC"].append(self.c_ICE.resultEndpoint[endpoint].Response)
+            if self.l_assay_toselect != [] and not endpoint in self.l_assay_toselect:
+                continue
+            if self.l_type_assay_toselect != []:
+                aeid = self.get_aeidByNnameEndpoint(endpoint)
+                function_type = self.c_Assays.c_Endpoint[aeid].charac["assay_function_type"]
+                if not function_type in self.l_type_assay_toselect:
+                    continue
+            if CASRN in self.c_ICE.resultEndpoint[endpoint].CASRN:
+                i_CASRN = self.c_ICE.resultEndpoint[endpoint].CASRN.index(CASRN)
+                d_out["List AC50 or QC"].append(self.c_ICE.resultEndpoint[endpoint].Response[i_CASRN])
                 d_out["List tested assays"].append(endpoint)
-                d_out["Unit"].append(self.c_ICE.resultEndpoint[endpoint].ResponseUnit)
-            except:
-                d_out["List assays no tested"].append(endpoint)
+                d_out["Unit"].append(self.c_ICE.resultEndpoint[endpoint].ResponseUnit[i_CASRN])
+            else:
+                d_out["List no tested assays"].append(endpoint)
         
         if store == TRUE:
             self.d_chem_mapped[CASRN] = d_out

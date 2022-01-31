@@ -34,23 +34,45 @@ class TestToxCastLib(unittest.TestCase):
 
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         p_out = cInvitroDB.get_resultTableFromGenes(["CYP19A1"], "/mnt/c/Users/AlexandreBorrel/research/development/ToxCastLib/sources/tests/")
-        self.assertEqual(path.exists(p_out), True)
+        self.assertEqual(path.exists(p_out), True)"""
     
     def test_getToxCastResultByChem(self):
         
-        CASRN = "60-35-5"
+        CASRN = "91-94-1"
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         result_ToxCast = cInvitroDB.get_ToxCastResultByChem(CASRN)
-        self.assertEqual(type(result_ToxCast), dict)"""
+        self.assertEqual(type(result_ToxCast), dict)
     
-    def test_getCoverageAssayTestedByChem(self):
+    """def test_getCoverageAssayTestedByChem(self):
 
         CASRN = "60-35-5"
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
-        d_coverage = cInvitroDB.get_coverageTestedByChem(CASRN)
+        d_coverage = cInvitroDB.get_coverageTestedAssayByChem(CASRN)
         print(d_coverage)
-        self.assertEqual(d_coverage["coverage"], 0.34618834080717487)
+        self.assertEqual(d_coverage["coverage"], 0.5294924554183813)
+    
+    
+    def test_get_listAllEndpoint(self):
+        
+        cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
+        l_endpoint = cInvitroDB.get_listAllEndpoint()
+
+        self.assertEqual(type(l_endpoint), list)
        
+    def test_get_listAllAssayFunctionType(self):
+            
+        cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
+        l_type = cInvitroDB.get_listAllAssayFunctionType()
+
+        self.assertEqual(type(l_type), list)
+        
+    def test_get_aeidByNnameEndpoint(self):
+       
+        cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
+        aeid = cInvitroDB.get_aeidByNnameEndpoint("NCCT_MITO_basal_resp_rate_OCR_up")
+        self.assertEqual(aeid, 2443) """
+        
+      
 
 if __name__ == '__main__':
     unittest.main()
