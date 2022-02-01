@@ -34,7 +34,7 @@ class TestToxCastLib(unittest.TestCase):
 
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         p_out = cInvitroDB.get_resultTableFromGenes(["CYP19A1"], "/mnt/c/Users/AlexandreBorrel/research/development/ToxCastLib/sources/tests/")
-        self.assertEqual(path.exists(p_out), True)"""
+        self.assertEqual(path.exists(p_out), True)
     
     def test_getToxCastResultByChem(self):
         
@@ -43,7 +43,7 @@ class TestToxCastLib(unittest.TestCase):
         result_ToxCast = cInvitroDB.get_ToxCastResultByChem(CASRN)
         self.assertEqual(type(result_ToxCast), dict)
     
-    """def test_getCoverageAssayTestedByChem(self):
+    def test_getCoverageAssayTestedByChem(self):
 
         CASRN = "60-35-5"
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
@@ -72,7 +72,12 @@ class TestToxCastLib(unittest.TestCase):
         aeid = cInvitroDB.get_aeidByNnameEndpoint("NCCT_MITO_basal_resp_rate_OCR_up")
         self.assertEqual(aeid, 2443) """
         
-      
+    def test_get_geneByNnameEndpoint(self):
+        
+        endpoint = "ATG_Oct_MLP_CIS_up"
+        cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
+        l_gene = cInvitroDB.get_geneByNnameEndpoint(endpoint)
+        self.assertEqual(l_gene, ['POU2F1']) 
 
 if __name__ == '__main__':
     unittest.main()

@@ -140,7 +140,33 @@ class ToxCastLib:
                 l_out.append(function_type) 
         
         return l_out
+    
+    def get_geneByNnameEndpoint(self, endpoint_in):
+        """Get gene mapping using the endpoint name
+
+        Args:
+            endpoint_in (str): endpoint name used to define the mapping
+
+        Returns:
+            [list]: list of gene mapped on the endpoint name 
+        """
+        if not "d_geneMap" in self.c_geneMap.__dict__:
+            self.c_geneMap.loadMapping()
+
+        # trandform endpoint_in in aeid
+        aeid = self.get_aeidByNnameEndpoint(endpoint_in)
+
+        l_out = []
+        for gene in self.c_geneMap.d_geneMap.keys():
+            if aeid in self.c_geneMap.d_geneMap[gene].l_aeid:
+                l_out.append(gene)
+                
+        return l_out
         
+        
+        
+        return
+       
     def get_ToxCastResultByChem(self, CASRN, store = False):
         """
         Args:
