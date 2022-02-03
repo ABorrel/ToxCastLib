@@ -159,14 +159,10 @@ class ToxCastLib:
         l_out = []
         for gene in self.c_geneMap.d_geneMap.keys():
             if aeid in self.c_geneMap.d_geneMap[gene].l_aeid:
-                l_out.append(gene)
+                l_out.append(str(gene))
                 
         return l_out
-        
-        
-        
-        return
-       
+              
     def get_ToxCastResultByChem(self, CASRN, store = False):
         """
         Args:
@@ -209,3 +205,59 @@ class ToxCastLib:
             self.d_chem_mapped[CASRN] = d_out
         
         return d_out
+    
+    def get_AllToxCastResultByAssay(self, p_out=""):
+        """Function that will count by endpoint the number of chemicals active, inactive and QC rejected
+
+        Args:
+            p_out (str, optional): path to the file out, will include table. Defaults to "".
+
+        Returns:
+            (dict): Dictionnary with endpoint as a key
+        """
+        # need to extract all assays with the chemicals
+        # load ICE
+        if not "resultEndpoint" in self.c_ICE.__dict__:
+            self.c_ICE.load_ICE()
+
+        d_out = []
+        
+        d_out = {"List tested assays":[], "List AC50 or QC":[], "List no tested assays":[], "Unit":[]}
+        for endpoint in self.c_ICE.resultEndpoint.keys():
+            if self.l_assay_toselect != [] and not endpoint in self.l_assay_toselect:
+                continue
+            if self.l_type_assay_toselect != []:
+                aeid = self.get_aeidByNnameEndpoint(endpoint)
+                function_type = self.c_Assays.c_Endpoint[aeid].charac["assay_function_type"]
+                if not function_type in self.l_type_assay_toselect:
+                    continue
+            
+            d_out[endpoint] = {}
+            d_out[endpoint]["QC-Omit"] = 0
+            d_out[endpoint]["Active"] = 0
+            d_out[endpoint]["Inactive"] = 0
+            d_out[endpoint]["Gene"] = self.get_geneByNnameEndpoint(endpoint)
+
+            i_chem = 0
+            imax = len(self.c_ICE.resultEndpoint[endpoint].CASRN)
+            d_out[endpoint]["count"] = imax
+            while i_chem < imax:
+                if self.c_ICE.resultEndpoint[endpoint].Response[i_chem] == "Active":
+                    d_out[endpoint]["Active"] = d_out[endpoint]["Active"] + 1
+                elif self.c_ICE.resultEndpoint[endpoint].Response[i_chem] == "Inactive":
+                    d_out[endpoint]["Inactive"] = d_out[endpoint]["Inactive"] + 1
+                elif self.c_ICE.resultEndpoint[endpoint].Response[i_chem] == "QC-Omit":
+                    d_out[endpoint]["QC-Omit"] = d_out[endpoint]["QC-Omit"] + 1
+                i_chem = i_chem + 1
+            
+        if p_out != "":
+            #case where 
+            try: filout = open(p_out, "w")
+            except: return d_out
+        
+            filout.write("Assay\tNb MC tested\tNb passed QC\tActive\tInactive\tQC-omit\tGene Mapped\n")
+            for assay in d_out.keys():
+                filout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\n"%(assay, d_out[assay]["count"], d_out[assay]["Active"], d_out[assay]["Inactive"], d_out[assay]["QC-Omit"], d_out[assay]["Gene"]))
+            filout.close()
+            
+        return d_out       

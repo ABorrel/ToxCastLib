@@ -72,12 +72,10 @@ class TestToxCastLib(unittest.TestCase):
         aeid = cInvitroDB.get_aeidByNnameEndpoint("NCCT_MITO_basal_resp_rate_OCR_up")
         self.assertEqual(aeid, 2443) """
         
-    def test_get_geneByNnameEndpoint(self):
-        
-        endpoint = "ATG_Oct_MLP_CIS_up"
+    def test_get_AllToxCastResultByAssay(self):
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
-        l_gene = cInvitroDB.get_geneByNnameEndpoint(endpoint)
-        self.assertEqual(l_gene, ['POU2F1']) 
+        d_mapped = cInvitroDB.get_AllToxCastResultByAssay()
+        self.assertEqual(type(d_mapped), dict) 
 
 if __name__ == '__main__':
     unittest.main()
