@@ -74,7 +74,8 @@ class TestToxCastLib(unittest.TestCase):
         
     def test_get_AllToxCastResultByAssay(self):
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
-        d_mapped = cInvitroDB.get_AllToxCastResultByAssay()
+        d_mapped = cInvitroDB.get_AllToxCastResultByAssay("./tests/mapassay.csv")
+        
         self.assertEqual(type(d_mapped), dict) 
 
 if __name__ == '__main__':

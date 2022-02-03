@@ -220,9 +220,8 @@ class ToxCastLib:
         if not "resultEndpoint" in self.c_ICE.__dict__:
             self.c_ICE.load_ICE()
 
-        d_out = []
+        d_out = {}
         
-        d_out = {"List tested assays":[], "List AC50 or QC":[], "List no tested assays":[], "Unit":[]}
         for endpoint in self.c_ICE.resultEndpoint.keys():
             if self.l_assay_toselect != [] and not endpoint in self.l_assay_toselect:
                 continue
@@ -257,7 +256,7 @@ class ToxCastLib:
         
             filout.write("Assay\tNb MC tested\tNb passed QC\tActive\tInactive\tQC-omit\tGene Mapped\n")
             for assay in d_out.keys():
-                filout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\n"%(assay, d_out[assay]["count"], d_out[assay]["Active"], d_out[assay]["Inactive"], d_out[assay]["QC-Omit"], d_out[assay]["Gene"]))
+                filout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\n"%(assay, d_out[assay]["count"], d_out[assay]["Active"] + d_out[assay]["Inactive"], d_out[assay]["Active"], d_out[assay]["Inactive"], d_out[assay]["QC-Omit"], ",".join(d_out[assay]["Gene"])))
             filout.close()
             
         return d_out       
