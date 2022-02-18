@@ -70,13 +70,20 @@ class TestToxCastLib(unittest.TestCase):
        
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         aeid = cInvitroDB.get_aeidByNnameEndpoint("NCCT_MITO_basal_resp_rate_OCR_up")
-        self.assertEqual(aeid, 2443) """
+        self.assertEqual(aeid, 2443) 
         
     def test_get_AllToxCastResultByAssay(self):
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         d_mapped = cInvitroDB.get_AllToxCastResultByAssay("./tests/mapassay.csv")
         
-        self.assertEqual(type(d_mapped), dict) 
+        self.assertEqual(type(d_mapped), dict) """
+    
+    def test_get_AllToxCastResultByAssay(self):
+        cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
+        d_empty = cInvitroDB.get_KCByNnameEndpoint("NCCT_MITO_basal_resp_rate_OCR_up")
+        d_test = cInvitroDB.get_KCByNnameEndpoint("TOX21_PR_BLA_Agonist_viability")
+        
+        self.assertEqual(d_test, {'aeid': 2124, 'aenm': 'TOX21_PR_BLA_Agonist_viability', 'Characteristic #': 10, 'Description': 'Alters cell proliferation, cell death or nutrient supply'})
 
 if __name__ == '__main__':
     unittest.main()

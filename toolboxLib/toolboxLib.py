@@ -14,9 +14,6 @@ def loadMatrixToList(pmatrixIn):
     return llinesMat
 
 
-
-
-
 def loadExcelSheet(p_excel, name_sheet, k_head = None):
     """
     TO DO: Add check duplicate rownames

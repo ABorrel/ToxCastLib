@@ -1,7 +1,9 @@
+from os import path
 from pickle import FALSE, TRUE
 from Assays import Assays
 from ICE import ICE
 from GeneMap import GeneMap
+from toolboxLib import loadExcelSheet
 
 
 class ToxCastLib:
@@ -23,11 +25,17 @@ class ToxCastLib:
         self.l_type_assay_toselect = []
         self.l_assay_toselect = []
         
-
     def load_AssaysAndICEAndGeneMap(self):
         self.c_Assays.loadAll()
         self.c_ICE.load_ICE()
         self.c_geneMap.loadMapping()
+
+    def load_KCByAssays(self):
+        """Load KC mapping on the ToxCast assays
+        """
+        pr_lib = path.dirname(__file__)
+        d_KC = loadExcelSheet(pr_lib + "/../DATA/KCMappings_2018.xlsx", "Sheet1", "aeid")
+        self.d_KC= d_KC
 
     def get_EndpointByGene(self, l_genes):
         """
@@ -141,6 +149,20 @@ class ToxCastLib:
         
         return l_out
     
+    def get_KCByNnameEndpoint(self, endpoint_in):
+        
+        if not "d_KC" in self.__dict__:
+            self.load_KCByAssays()
+
+        # trandform endpoint_in in aeid
+        aeid = self.get_aeidByNnameEndpoint(endpoint_in)
+
+        if aeid in list(self.d_KC.keys()):
+            return self.d_KC[aeid]
+        
+        else:
+            return {}
+
     def get_geneByNnameEndpoint(self, endpoint_in):
         """Get gene mapping using the endpoint name
 
@@ -162,6 +184,9 @@ class ToxCastLib:
                 l_out.append(str(gene))
                 
         return l_out
+        
+        
+        return 
               
     def get_ToxCastResultByChem(self, CASRN, store = False):
         """
