@@ -1,6 +1,5 @@
-from toolboxLib import loadExcelSheet
 from .Assay import Characteristic, Component, Endpoint
-
+from ToxCastLib.toolbox import loadExcelSheet
 
 class Assays:
 

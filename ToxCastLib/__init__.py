@@ -1,1 +1,1 @@
-from .ToxCastLib import ToxCastLib
+from ToxCastLib import toolbox

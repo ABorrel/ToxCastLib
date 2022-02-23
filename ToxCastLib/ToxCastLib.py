@@ -1,9 +1,9 @@
 from os import path
 from pickle import FALSE, TRUE
-from Assays import Assays
-from ICE import ICE
-from GeneMap import GeneMap
-from toolboxLib import loadExcelSheet
+from .Assays import Assays
+from .ICE import ICE
+from .GeneMap import GeneMap
+from .toolbox import loadExcelSheet
 
 
 class ToxCastLib:
@@ -34,7 +34,7 @@ class ToxCastLib:
         """Load KC mapping on the ToxCast assays
         """
         pr_lib = path.dirname(__file__)
-        d_KC = loadExcelSheet(pr_lib + "/../DATA/KCMappings_2018.xlsx", "Sheet1", "aeid")
+        d_KC = loadExcelSheet(pr_lib + "/DATA/KCMappings_2018.xlsx", "Sheet1", "aeid")
         self.d_KC= d_KC
 
     def get_EndpointByGene(self, l_genes):

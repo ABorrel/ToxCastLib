@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ToxCastLib", # Replace with your own username
-    version="0.3.2",
+    version="0.3.7",
     author="Alexandre Borrel",
     author_email="a.borrel@gmail.com",
     description="Load in python the invitroDB3.3 with ToxCast assay results",
@@ -21,4 +21,6 @@ setuptools.setup(
     python_requires='>=3.6',
     test_suite='nose.collector',
     tests_require=['nose'],
+    include_package_data=True,
+    package_data={'': ['DATA/*.xlsx']},
 )

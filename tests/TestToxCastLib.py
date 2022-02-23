@@ -3,7 +3,8 @@ from os import path
 import unittest
 
 from sklearn.metrics import coverage_error
-import ToxCastLib
+from ToxCastLib import ToxCastLib
+
 
 p_ICE = "/mnt/d/database/invitroDB3.3_7-14-21/ICE_invitroDB3.3_7-14-21/cHTS2021_invitrodb33_20210128.txt"
 p_assays_sum = "/mnt/d/database/invitroDB3.3_7-14-21/EPA_invitroDB-3.3_7-14-21/INVITRODB_V3_3_SUMMARY/assay_annotation_information_invitrodb_v3_3.xlsx"
