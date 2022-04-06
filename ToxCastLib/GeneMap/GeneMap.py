@@ -1,4 +1,5 @@
 from .Map import Map
+from ToxCastLib.toolbox import *
 
 class GeneMap:
 

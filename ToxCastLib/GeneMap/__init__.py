@@ -1,1 +1,1 @@
-from ToxCastLib.toolbox import *
+from . import GeneMap, Map

@@ -1,1 +1,1 @@
-from ToxCastLib import *
+from . import Assay, Assays

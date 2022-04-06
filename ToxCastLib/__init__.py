@@ -1,1 +1,1 @@
-from ToxCastLib import toolbox
+from . import Assays, GeneMap, ICE, toolbox

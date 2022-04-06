@@ -1,10 +1,8 @@
 from os import path
-from pickle import FALSE, TRUE
-from .Assays import Assays
-from .ICE import ICE
-from .GeneMap import GeneMap
-from .toolbox import loadExcelSheet
-
+from ToxCastLib.Assays import Assays
+from ToxCastLib.ICE import ICE
+from ToxCastLib.GeneMap import GeneMap
+from ToxCastLib.toolbox import *
 
 class ToxCastLib:
 
@@ -108,19 +106,25 @@ class ToxCastLib:
         filout.close()
         return p_filout
     
-    def get_coverageTestedAssayByChem(self, CASRN, store=FALSE):
+    def get_coverageTestedAssayByChem(self, CASRN, store="false"):
         """Function used to compute the coverage of assay tested
 
         Args:
             CASRN (str): [description]
-            store (bool, optional): Use to sore the mapping.
+            store (str, optional): Use to sore the mapping. - true or false in string
 
         Returns:
             [dictionnary]: dictionnary with the number of assays tested and non tested with the coverage score
         """
         d_toxcast = self.get_ToxCastResultByChem(CASRN, store) 
         coverage = float(len(d_toxcast["List tested assays"]))/(len(d_toxcast["List tested assays"]) + len(d_toxcast["List no tested assays"]))
-        d_out = {"Nb assays tested":len(d_toxcast["List tested assays"]), "Nb no tested":  len(d_toxcast["List no tested assays"]), "coverage": coverage}
+        
+        # add active + inactive + QC
+        # List AC50 or QC
+        nb_active = d_toxcast["List AC50 or QC"].count("Active")
+        nb_inactive = d_toxcast["List AC50 or QC"].count("Inactive")
+        nb_QC_flags_omit = d_toxcast["List AC50 or QC"].count("QC-omit") + d_toxcast["List AC50 or QC"].count("Flag-Omit")
+        d_out = {"Nb assays tested":len(d_toxcast["List tested assays"]), "Nb no tested":  len(d_toxcast["List no tested assays"]), "coverage": coverage, "Nb QC-omit": nb_QC_flags_omit, "Nb active": nb_active, "Nb inactive": nb_inactive}
         return d_out
 
     def get_listAllEndpoint(self):
@@ -188,11 +192,11 @@ class ToxCastLib:
         
         return 
               
-    def get_ToxCastResultByChem(self, CASRN, store = False):
+    def get_ToxCastResultByChem(self, CASRN, store = "false"):
         """
         Args:
             CASRN (str): CASRN of chemical of interest 
-            store (bool, optional): Store create a new variable that store the mapping. Defaults to False.
+            store (str, optional): Store create a new variable that store the mapping. Defaults to False.
         Return:
             Dictionnary with list of AC50, assays tested, list of unit and assays no tested
         """
@@ -202,7 +206,7 @@ class ToxCastLib:
             self.c_ICE.load_ICE()
 
         # define a variable to store mapping
-        if store == True:
+        if store == "true":
             if not "d_chem_mapped" in self.__dict__:
                 self.d_chem_mapped = {}
             
@@ -226,7 +230,7 @@ class ToxCastLib:
             else:
                 d_out["List no tested assays"].append(endpoint)
         
-        if store == TRUE:
+        if store == "true":
             self.d_chem_mapped[CASRN] = d_out
         
         return d_out

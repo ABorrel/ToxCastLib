@@ -1,1 +1,1 @@
-from ToxCastLib.ICE import *
+from . import chemical, ICE, record

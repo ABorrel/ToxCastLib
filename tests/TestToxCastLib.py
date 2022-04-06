@@ -50,7 +50,7 @@ class TestToxCastLib(unittest.TestCase):
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         d_coverage = cInvitroDB.get_coverageTestedAssayByChem(CASRN)
         print(d_coverage)
-        self.assertEqual(d_coverage["coverage"], 0.5294924554183813)
+        self.assertEqual(int(d_coverage["coverage"]), 0)"""
     
     
     def test_get_listAllEndpoint(self):
@@ -77,7 +77,7 @@ class TestToxCastLib(unittest.TestCase):
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         d_mapped = cInvitroDB.get_AllToxCastResultByAssay("./tests/mapassay.csv")
         
-        self.assertEqual(type(d_mapped), dict) """
+        self.assertEqual(type(d_mapped), dict)
     
     def test_get_AllToxCastResultByAssay(self):
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
