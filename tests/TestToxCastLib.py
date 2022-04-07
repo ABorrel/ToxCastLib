@@ -50,7 +50,7 @@ class TestToxCastLib(unittest.TestCase):
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         d_coverage = cInvitroDB.get_coverageTestedAssayByChem(CASRN)
         print(d_coverage)
-        self.assertEqual(int(d_coverage["coverage"]), 0)"""
+        self.assertEqual(int(d_coverage["coverage"]), 0)
     
     
     def test_get_listAllEndpoint(self):
@@ -79,12 +79,17 @@ class TestToxCastLib(unittest.TestCase):
         
         self.assertEqual(type(d_mapped), dict)
     
-    def test_get_AllToxCastResultByAssay(self):
+    def test_get_KCByNnameEndpoint(self):
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         d_empty = cInvitroDB.get_KCByNnameEndpoint("NCCT_MITO_basal_resp_rate_OCR_up")
         d_test = cInvitroDB.get_KCByNnameEndpoint("TOX21_PR_BLA_Agonist_viability")
         
-        self.assertEqual(d_test, {'aeid': 2124, 'aenm': 'TOX21_PR_BLA_Agonist_viability', 'Characteristic #': 10, 'Description': 'Alters cell proliferation, cell death or nutrient supply'})
+        self.assertEqual(d_test, {'aeid': 2124, 'aenm': 'TOX21_PR_BLA_Agonist_viability', 'Characteristic #': 10, 'Description': 'Alters cell proliferation, cell death or nutrient supply'})"""
+        
+    def test_get_chemAssayByNameAssay(self):
+        cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
+        d_out = cInvitroDB.get_chemAssayByNameAssay(['TOX21_PR_BLA_Agonist_ratio', 'TOX21_PR_BLA_Agonist_viability', 'TOX21_PR_BLA_Antagonist_viability', "TOX21_PR_BLA_Antagonist_ratio"], "/mnt/c/Users/AlexandreBorrel/research/development/ToxCastLib/sources/tests/PR_BLA.csv")
+        self.assertEqual(type(d_out), dict)
 
 if __name__ == '__main__':
     unittest.main()

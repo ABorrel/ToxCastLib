@@ -288,4 +288,51 @@ class ToxCastLib:
                 filout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\n"%(assay, d_out[assay]["count"], d_out[assay]["Active"] + d_out[assay]["Inactive"], d_out[assay]["Active"], d_out[assay]["Inactive"], d_out[assay]["QC-Omit"], ",".join(d_out[assay]["Gene"])))
             filout.close()
             
-        return d_out       
+        return d_out
+    
+    def get_chemAssayByNameAssay(self, l_endpoints_in, p_out = ""):
+        
+        # need to extract all assays with the chemicals
+        # load ICE
+        
+        if not "resultEndpoint" in self.c_ICE.__dict__:
+            self.c_ICE.load_ICE()
+        
+        d_out = {}
+        l_casn_all = []
+        for endpoint in l_endpoints_in:
+            d_out[endpoint] = {}
+            l_casn = self.c_ICE.resultEndpoint[endpoint].CASRN
+            l_casn_all = l_casn_all + l_casn
+            i = 0
+            imax = len(l_casn)
+            while i < imax:
+                casn = l_casn[i]
+                d_out[endpoint][casn] = {}
+                d_out[endpoint][casn]["Response"] = self.c_ICE.resultEndpoint[endpoint].Response[i]
+                d_out[endpoint][casn]["unit"] = self.c_ICE.resultEndpoint[endpoint].ResponseUnit[i]
+                d_out[endpoint][casn]["QC"] = self.c_ICE.resultEndpoint[endpoint].QC[i]
+                i = i + 1
+
+        l_casn_all = list(set(l_casn_all))
+
+        if p_out != "":
+            filout = open(p_out, "w")
+            filout.write("CASRN\tname\t%s\n"%("\t".join([ "%s\t%s"%(endpoint, endpoint + " Unit") for endpoint in l_endpoints_in])))
+        
+            for casrn in l_casn_all:
+                l_w = [casrn]
+                name_chem = self.c_ICE.chemicals[casrn].name
+                l_w.append(name_chem)
+                for endpoint in l_endpoints_in:
+                    if not casrn in list(d_out[endpoint].keys()):
+                        l_w = l_w + ["NA", "NA"]
+                    else:
+                        l_w.append(d_out[endpoint][casrn]["Response"])
+                        l_w.append(d_out[endpoint][casrn]["unit"])
+                filout.write("%s\n"%("\t".join(l_w)))
+            filout.close()
+        
+        return d_out                    
+            
+        
