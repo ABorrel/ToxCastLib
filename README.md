@@ -4,6 +4,8 @@ Python library to load the Tox21-ToxCast assays from the invitroDB effort
 # Dependencies
 - Python 3.9
 
+# to do
+- link with the database invitrodb3.4
 
 # Data
 Using the invitroDB3.3 and the filtering from ICE for activities cleaning - Data needs to be unziped

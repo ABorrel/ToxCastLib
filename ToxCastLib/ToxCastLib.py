@@ -189,8 +189,6 @@ class ToxCastLib:
                 
         return l_out
         
-        
-        return 
               
     def get_ToxCastResultByChem(self, CASRN, store = "false"):
         """
@@ -335,4 +333,16 @@ class ToxCastLib:
         
         return d_out                    
             
+    def get_listAllGene(self):
         
+        l_out = []
+        l_allEndpoint = self.get_listAllEndpoint()
+        for endpoint in l_allEndpoint:
+            l_gene = self.get_geneByNnameEndpoint(endpoint)
+            l_out = l_out + l_gene
+        
+        #remove duplicate
+        l_out = list(set(l_out))
+        
+        print(l_out)
+        return l_out

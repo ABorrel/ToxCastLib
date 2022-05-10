@@ -6,9 +6,9 @@ from sklearn.metrics import coverage_error
 from ToxCastLib import ToxCastLib
 
 
-p_ICE = "/mnt/d/database/invitroDB3.3_7-14-21/ICE_invitroDB3.3_7-14-21/cHTS2021_invitrodb33_20210128.txt"
-p_assays_sum = "/mnt/d/database/invitroDB3.3_7-14-21/EPA_invitroDB-3.3_7-14-21/INVITRODB_V3_3_SUMMARY/assay_annotation_information_invitrodb_v3_3.xlsx"
-p_gene_mapping = "/mnt/d/database/invitroDB3.3_7-14-21/EPA_invitroDB-3.3_7-14-21/INVITRODB_V3_3_SUMMARY/gene_target_information_invitrodb_v3_3.xlsx"
+p_ICE = "/mnt/d/database/invitroDB3.3/cHTS2021_invitrodb33_20210128.txt"
+p_assays_sum = "/mnt/d/database/invitroDB3.3/assay_annotation_information_invitrodb_v3_3.xlsx"
+p_gene_mapping = "/mnt/d/database/invitroDB3.3/gene_target_information_invitrodb_v3_3.xlsx"
 
 
 class TestToxCastLib(unittest.TestCase):
@@ -57,8 +57,10 @@ class TestToxCastLib(unittest.TestCase):
         
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
         l_endpoint = cInvitroDB.get_listAllEndpoint()
+        print(l_endpoint)
 
         self.assertEqual(type(l_endpoint), list)
+    
        
     def test_get_listAllAssayFunctionType(self):
             
@@ -84,13 +86,23 @@ class TestToxCastLib(unittest.TestCase):
         d_empty = cInvitroDB.get_KCByNnameEndpoint("NCCT_MITO_basal_resp_rate_OCR_up")
         d_test = cInvitroDB.get_KCByNnameEndpoint("TOX21_PR_BLA_Agonist_viability")
         
-        self.assertEqual(d_test, {'aeid': 2124, 'aenm': 'TOX21_PR_BLA_Agonist_viability', 'Characteristic #': 10, 'Description': 'Alters cell proliferation, cell death or nutrient supply'})"""
+        self.assertEqual(d_test, {'aeid': 2124, 'aenm': 'TOX21_PR_BLA_Agonist_viability', 'Characteristic #': 10, 'Description': 'Alters cell proliferation, cell death or nutrient supply'})
         
+    
     def test_get_chemAssayByNameAssay(self):
         cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
-        d_out = cInvitroDB.get_chemAssayByNameAssay(['TOX21_PR_BLA_Agonist_ratio', 'TOX21_PR_BLA_Agonist_viability', 'TOX21_PR_BLA_Antagonist_viability', "TOX21_PR_BLA_Antagonist_ratio"], "/mnt/c/Users/AlexandreBorrel/research/development/ToxCastLib/sources/tests/PR_BLA.csv")
-        self.assertEqual(type(d_out), dict)
-
+        d_out = cInvitroDB.get_chemAssayByNameAssay(["NVS_NR_bER", "NVS_NR_hER", "NVS_NR_mERa", "OT_ER_ERaERa_0480", "OT_ER_ERaERa_1440",
+                                                     "OT_ER_ERaERb_0480", "OT_ER_ERaERb_1440", "OT_ER_ERbERb_0480", 
+                                                     "OT_ER_ERbERb_1440", "OT_ERa_EREGFP_0120", "OT_ERa_EREGFP_0480", 
+                                                     "ATG_ERa_TRANS_up", "ATG_ERE_CIS_up", "TOX21_ERa_BLA_Agonist_ratio", "TOX21_ERa_LUC_VM7_Agonist",
+                                                     "ACEA_ER_80hr", "TOX21_ERa_BLA_Antagonist_ratio"], "/mnt/c/Users/AlexandreBorrel/research/development/ToxCastLib/sources/tests/PR_ER.csv")
+        self.assertEqual(type(d_out), dict)"""
+    
+    def test_get_listAllGene(self):
+        cInvitroDB = ToxCastLib.ToxCastLib(p_ICE, p_assays_sum, p_gene_mapping)
+        l_out = cInvitroDB.get_listAllGene()
+        self.assertEqual(type(l_out), list)
+    
 if __name__ == '__main__':
     unittest.main()
 
